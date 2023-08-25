@@ -2,6 +2,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
+    "build": "pnpm --dir ./packages build",
+    "dev": "pnpm --dir ./example dev",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

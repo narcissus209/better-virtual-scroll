@@ -1,0 +1,11 @@
+<template>
+  <div class="demo1">
+    <BetterVirtualScroll></BetterVirtualScroll>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { BetterVirtualScroll } from 'better-virtual-scroll'
+</script>
+
+<style lang="less" scoped></style>

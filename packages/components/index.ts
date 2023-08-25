@@ -1,1 +1,1 @@
-export * from './VirtualScroll'
+export * from './BetterVirtualScroll'

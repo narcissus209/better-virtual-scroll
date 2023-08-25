@@ -1,12 +1,19 @@
 {
-  "name": "example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "better-virtual-scroll-example",
+  "version": "1.0.1",
+  "description": "vue3 虚拟滚动组件示例",
+  "author": "Wang JiaLong",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "MIT",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.2.0",
+    "typescript": "^4.9.5",
+    "vite": "^3.2.7",
+    "vue": "^3.3.4"
+  },
+  "dependencies": {
+    "better-virtual-scroll": "workspace:^1.0.1"
+  }
 }
