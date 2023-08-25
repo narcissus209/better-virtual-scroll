@@ -1,17 +1,10 @@
 {
   "private": true,
-  "name": "better-virtual-scroll-demo",
-  "version": "1.0.0",
-  "description": "vue3 虚拟滚动组件",
-  "main": "index.js",
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
