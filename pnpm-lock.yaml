@@ -41,6 +41,9 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: registry.npmmirror.com/typescript@4.9.5
+      vite:
+        specifier: ^3.2.7
+        version: registry.npmmirror.com/vite@3.2.7(@types/node@20.4.7)
 
   example:
     dependencies:

@@ -1,6 +1,6 @@
 <template>
   <div class="demo1">
-    <BetterVirtualScroll></BetterVirtualScroll>
+    <BetterVirtualScroll :list="[]"></BetterVirtualScroll>
   </div>
 </template>
 

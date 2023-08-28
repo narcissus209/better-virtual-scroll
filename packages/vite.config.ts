@@ -11,7 +11,6 @@ export default defineConfig({
       name: 'better-virtual-scroll',
     },
     rollupOptions: {
-      //忽略打包vue文件
       external: ['vue'],
       input: './components/index.ts',
       output: [

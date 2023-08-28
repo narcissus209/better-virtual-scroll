@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "moduleResolution": "Node",
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "types": ["vite/client"]
   }
 }
