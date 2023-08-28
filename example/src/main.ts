@@ -6,4 +6,6 @@ const app = createApp(App)
 import { router } from './router'
 app.use(router)
 
+import 'better-virtual-scroll/dist/es/style.css'
+
 app.mount('#app')

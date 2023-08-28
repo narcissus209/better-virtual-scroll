@@ -7,26 +7,26 @@ export default defineConfig({
     outDir: 'dist',
     minify: true,
     lib: {
-      entry: './components/index.ts',
+      entry: './src/index.ts',
       name: 'better-virtual-scroll',
     },
     rollupOptions: {
       external: ['vue'],
-      input: './components/index.ts',
+      input: './src/index.ts',
       output: [
         {
           format: 'es',
           entryFileNames: '[name].js',
           dir: './dist/es',
           preserveModules: true,
-          preserveModulesRoot: './components',
+          preserveModulesRoot: './src',
         },
         {
           format: 'cjs',
           entryFileNames: '[name].js',
           dir: './dist/lib',
           preserveModules: true,
-          preserveModulesRoot: './components',
+          preserveModulesRoot: './src',
         },
       ],
     },

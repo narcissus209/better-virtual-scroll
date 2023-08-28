@@ -16,8 +16,15 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends { id: string | number; size?: number }">
+<script setup lang="ts">
 import { nextTick, onMounted, ref, type Ref, shallowRef, watch } from 'vue'
+
+type T = {
+  id: string | number
+  size?: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any
+}
 
 type VirtualListItem = {
   height: number
@@ -143,7 +150,7 @@ const calcRenderList = (isScroll?: boolean) => {
 
   // 视图列表数据与移动
   const viewList = virtualList.slice(upStartIndex, downEndIndex)
-  const _renderList = []
+  const _renderList: T[] = []
   for (let i = 0; i < viewList.length; i++) {
     _renderList.push(...viewList[i].children)
   }

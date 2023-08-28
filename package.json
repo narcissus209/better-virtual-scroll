@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "build": "pnpm --dir ./packages build",
+    "build": "pnpm --dir ./packages/better-virtual-scroll build",
     "dev": "pnpm --dir ./example dev"
   },
   "devDependencies": {

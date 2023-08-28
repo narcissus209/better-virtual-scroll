@@ -49,7 +49,7 @@ importers:
     dependencies:
       better-virtual-scroll:
         specifier: workspace:^1.0.1
-        version: link:../packages
+        version: link:../packages/better-virtual-scroll
       vue:
         specifier: ^3.3.4
         version: registry.npmmirror.com/vue@3.3.4
@@ -67,8 +67,7 @@ importers:
         specifier: ^3.2.7
         version: registry.npmmirror.com/vite@3.2.7(@types/node@20.4.7)(less@4.2.0)
 
-  packages:
-
+  packages/better-virtual-scroll:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^3.2.0
