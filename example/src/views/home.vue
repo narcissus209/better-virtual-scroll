@@ -4,7 +4,7 @@
       <RouterView></RouterView>
     </div>
     <div class="nav-bar">
-      <RouterLink class="item" to="/demo1">demo1</RouterLink>
+      <RouterLink class="item" to="/demo1">简单列表</RouterLink>
       <RouterLink class="item" to="/demo2">demo2</RouterLink>
       <RouterLink class="item" to="/demo3">demo3</RouterLink>
     </div>

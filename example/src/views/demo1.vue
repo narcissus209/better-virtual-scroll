@@ -1,6 +1,9 @@
 <template>
   <div class="demo1">
     <BetterVirtualScroll :list="list" :item-size="32" :buffer="600">
+      <template #before>
+        <div>简单的列表模式，且每行高度相同</div>
+      </template>
       <template v-slot="{ item }">
         <div class="item">{{ item.text }}</div>
       </template>
@@ -9,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { BetterVirtualScroll, TestCom } from 'better-virtual-scroll'
+import { BetterVirtualScroll } from 'better-virtual-scroll'
 import { ref } from 'vue'
 
 type Item = {

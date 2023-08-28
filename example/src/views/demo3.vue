@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { BetterVirtualScroll, TestCom } from 'better-virtual-scroll'
+import { BetterVirtualScroll } from 'better-virtual-scroll'
 import { ref } from 'vue'
 
 type Item = {
