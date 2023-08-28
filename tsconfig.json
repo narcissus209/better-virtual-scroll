@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "jsx": "preserve",
-    "strict": true,
-    "target": "ES2015",
+    "target": "ESNext",
     "module": "ESNext",
-    "skipLibCheck": true,
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "moduleResolution": "Node",
     "lib": ["esnext", "dom"]
   }

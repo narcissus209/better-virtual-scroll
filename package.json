@@ -3,9 +3,7 @@
   "scripts": {
     "prepare": "husky install",
     "build": "pnpm --dir ./packages build",
-    "dev": "pnpm --dir ./example dev",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm --dir ./example dev"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
@@ -17,6 +15,7 @@
     "eslint": "^8.47.0",
     "eslint-plugin-vue": "^9.17.0",
     "husky": "^8.0.3",
-    "prettier": "^3.0.2"
+    "prettier": "^3.0.2",
+    "typescript": "^4.9.5"
   }
 }
