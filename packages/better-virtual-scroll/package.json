@@ -15,7 +15,7 @@
   "scripts": {
     "build": "vite build"
   },
-  "author": "Wang JiaLong",
+  "author": "narcissus",
   "repository": {
     "type": "git",
     "url": "https://github.com/narcissus209/better-virtual-scroll"
