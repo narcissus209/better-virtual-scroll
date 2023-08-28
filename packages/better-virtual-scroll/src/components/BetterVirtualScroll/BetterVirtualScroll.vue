@@ -1,5 +1,10 @@
 <template>
-  <div ref="betterVirtualScrollRef" class="better-virtual-scroll" @scroll.passive="onScroll">
+  <div
+    ref="betterVirtualScrollRef"
+    class="better-virtual-scroll"
+    style="height: 100%; width: 100%; overflow-y: auto"
+    @scroll.passive="onScroll"
+  >
     <div v-if="$slots.before" class="better-virtual-scroll-before">
       <slot name="before"></slot>
     </div>
@@ -187,11 +192,3 @@ onMounted(() => {
   calcRenderList()
 })
 </script>
-
-<style lang="css" scoped>
-.better-virtual-scroll {
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
-}
-</style>
