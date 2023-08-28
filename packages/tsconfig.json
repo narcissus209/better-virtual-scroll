@@ -1,21 +1,4 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "composite": true,
-    "lib": ["esnext", "dom"],
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "skipLibCheck": true
-  },
-  "include": ["**/*.vue", "**/*.ts", "**/*.d.ts"],
-  "exclude": ["dist/**", "node_modules"]
+  "extends": "../tsconfig",
+  "include": ["components/**/*.vue", "components/**/*"]
 }

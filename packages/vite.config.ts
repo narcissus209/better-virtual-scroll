@@ -7,13 +7,13 @@ export default defineConfig({
     outDir: 'dist',
     minify: true,
     lib: {
-      entry: './index.ts',
+      entry: './components/index.ts',
       name: 'better-virtual-scroll',
     },
     rollupOptions: {
       //忽略打包vue文件
       external: ['vue'],
-      input: './index.ts',
+      input: './components/index.ts',
       output: [
         {
           format: 'es',
@@ -35,8 +35,8 @@ export default defineConfig({
   plugins: [
     vue(),
     dts({
-      outputDir: './dist/typings',
-      tsConfigFilePath: './tsconfig.json',
+      outDir: './dist/typings',
+      tsconfigPath: './tsconfig.json',
     }),
   ],
 })
