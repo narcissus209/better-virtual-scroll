@@ -1,0 +1,28 @@
+{
+  "name": "better-virtual-scroll-docs",
+  "version": "1.0.0",
+  "description": "vue3 虚拟滚动组件文档",
+  "main": "./build/build.js",
+  "scripts": {
+    "dev": "node ./build/build.js",
+    "build": "rollup -c",
+    "build2": "node build/index"
+  },
+  "author": "narcissus",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/narcissus209/better-virtual-scroll"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/less": "^3.0.3",
+    "less": "^4.2.0",
+    "vue": "^3.3.4"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}
