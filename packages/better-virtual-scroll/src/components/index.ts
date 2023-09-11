@@ -1,2 +1,8 @@
-export * from './BetterVirtualScroll'
-export * from './TestCom'
+import { BetterVirtualScroll } from './BetterVirtualScroll'
+
+export { BetterVirtualScroll }
+export default {
+  install: (app: any) => {
+    app.component('BetterVirtualScroll', BetterVirtualScroll)
+  },
+}
