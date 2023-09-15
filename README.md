@@ -51,7 +51,7 @@ app.component('BetterVirtualScroll', BetterVirtualScroll)
   type Buffer = number
   ```
 
-- `updateCount`: 如果列表数据更新了，可通过修改此字段来更新页面数据
+- `updateCount`: 如果列表数据更新了，可通过修改此字段来更新页面数据，内部通过 `watch` 这个值来监听数据的变化，没有通过 `watch` list
 
   ```ts
   type UpdateCount = number
@@ -59,7 +59,7 @@ app.component('BetterVirtualScroll', BetterVirtualScroll)
 
 ## Usage
 
-### 简单的 demo1
+### 1. 每条数据的行高相同
 
 ```vue
 <template>
@@ -96,6 +96,71 @@ for (let i = 0; i < 1000; i++) {
 }
 .item {
   height: 32px; // 设置每条数据的高度
+}
+</style>
+
+```
+
+### 2. 每条数据的行高不同
+
+```vue
+<template>
+  <div class="demo1">
+    <BetterVirtualScroll :list="list" :buffer="600" :update-count="updateCount">
+      <template #before>
+        <div>每行的高度不同，点击每行可调整每行的高度</div>
+      </template>
+      <template v-slot="{ item, index }">
+        <!-- 设置每行的行高 -->
+        <div class="item" :style="{ height: item.size + 'px' }" @click="setItemHeight(index)">
+          {{ item.text }} -- 行高：{{ item.size }}
+        </div>
+      </template>
+    </BetterVirtualScroll>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { BetterVirtualScroll } from 'better-virtual-scroll/src/components'
+import { onMounted, ref } from 'vue'
+
+const getRandomNum = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+const getRandomSize = () => 16 + getRandomNum(0, 48)
+
+type Item = {
+  id: string | number
+  text: string
+  size: number
+}
+const list = ref<Item[]>([])
+const updateCount = ref(0)
+onMounted(() => {
+  const _list: Item[] = []
+  for (let i = 0; i < 1000; i++) {
+    _list.push({
+      id: `id_${i}`,
+      text: `item-${i}`,
+      size: getRandomSize(), // 设置每行的行高
+    })
+  }
+  list.value = _list
+  updateCount.value++  // 更新数据
+})
+
+const setItemHeight = (index: number) => {
+  list.value[index].size = getRandomSize()  // 设置每行的行高
+  updateCount.value++  // 更新数据
+}
+</script>
+
+<style lang="less" scoped>
+.demo1 {
+  height: 100%;
+}
+.item {
+  height: 32px;
 }
 </style>
 
