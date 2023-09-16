@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { BetterVirtualScroll } from 'better-virtual-scroll/src/components'
+import { BetterVirtualScroll } from 'better-virtual-scroll'
 import { onMounted, ref } from 'vue'
 
 const getRandomNum = (min: number, max: number) => {
@@ -51,8 +51,5 @@ const setItemHeight = (index: number) => {
 <style lang="less" scoped>
 .demo1 {
   height: 100%;
-}
-.item {
-  height: 32px;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="nav-bar">
       <RouterLink class="item" to="/demo1">简单列表</RouterLink>
       <RouterLink class="item" to="/demo2">行高不同</RouterLink>
-      <RouterLink class="item" to="/demo3">demo3</RouterLink>
+      <RouterLink class="item" to="/demo3">特殊布局</RouterLink>
     </div>
     <div class="container">
       <RouterView></RouterView>
