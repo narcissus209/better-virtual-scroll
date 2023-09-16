@@ -8,7 +8,9 @@
       </template>
       <template v-slot="{ item }">
         <div v-if="item.type === 'title'" class="title">{{ item.text }}</div>
-        <div v-else class="item" :class="{ 'item-first': item.size }">{{ item.text }}</div>
+        <div v-else class="item" :class="{ 'item-first': item.size }">
+          <img :src="item.img" />
+        </div>
       </template>
     </BetterVirtualScroll>
   </div>
@@ -17,6 +19,19 @@
 <script setup lang="ts">
 import { BetterVirtualScroll } from 'better-virtual-scroll'
 import { onMounted, ref } from 'vue'
+import img1 from '@/assets/imgs/img1.jpg'
+import img2 from '@/assets/imgs/img2.jpg'
+import img3 from '@/assets/imgs/img3.jpg'
+import img4 from '@/assets/imgs/img4.jpg'
+import img5 from '@/assets/imgs/img5.jpg'
+
+const imgs: any = {
+  img1: img1,
+  img2: img2,
+  img3: img3,
+  img4: img4,
+  img5: img5,
+}
 
 const getRandomNum = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -26,6 +41,7 @@ type Item = {
   id: string | number
   text: string
   size: number
+  img?: string
   type: 'title' | 'item'
 }
 
@@ -43,7 +59,7 @@ onMounted(() => {
     _list.push({
       id: `title_${i}`,
       text: `标题---${i}`,
-      size: 40,
+      size: 40, // 标题的高度为 40px
       type: 'title',
     })
     const count = getRandomNum(10, 50)
@@ -51,7 +67,8 @@ onMounted(() => {
       _list.push({
         id: `title_${i}_item_${j}`,
         text: `图片---${j}`,
-        size: j % row === 0 ? itemSize : 0,
+        size: j % row === 0 ? itemSize : 0, // 一行显示4个，第一张图片高度为这一行的高度，后3张设为0
+        img: imgs['img' + getRandomNum(1, 5)],
         type: 'item',
       })
     }
@@ -65,6 +82,7 @@ onMounted(() => {
 .demo3 {
   height: 100%;
   .scroll::-webkit-scrollbar {
+    // 滚动条宽度会影响图片宽度
     width: 0px;
   }
   :deep(.better-virtual-scroll-view-list) {
@@ -87,6 +105,11 @@ onMounted(() => {
   background: rgba(0, 0, 0, 0.2);
   &.item-first {
     margin-left: 0;
+  }
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
   }
 }
 </style>
