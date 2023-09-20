@@ -47,6 +47,10 @@ const props = withDefaults(
   {},
 )
 
+const emits = defineEmits<{
+  (event: 'update', startIndex: number, endIndex: number): void
+}>()
+
 // 减少后面的判断，此值必定存在
 const betterVirtualScrollRef = ref() as Ref<HTMLDivElement>
 const getScrollTop = () => betterVirtualScrollRef.value.scrollTop
@@ -166,6 +170,7 @@ const calcRenderList = (isScroll?: boolean) => {
   const rangeIndex0 = Math.max(Math.floor(midStartIndex - bufferCount / 2), 0)
   const rangeIndex1 = Math.max(Math.min(Math.floor(midStartIndex + bufferCount / 2), virtualListLen - 1), 0)
   scrollRange = [virtualList[rangeIndex0]?.top || 0, virtualList[rangeIndex1]?.top || 0]
+  emits('update', upStartIndex, downEndIndex)
 }
 
 const requestAnimationCalcViewList = (isScroll?: boolean) => {

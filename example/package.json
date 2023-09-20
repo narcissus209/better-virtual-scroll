@@ -4,7 +4,7 @@
   "description": "vue3 虚拟滚动组件示例",
   "author": "Wang JiaLong",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite --host"
   },
   "license": "MIT",
   "devDependencies": {
@@ -13,7 +13,7 @@
     "vite": "^3.2.7"
   },
   "dependencies": {
-    "better-virtual-scroll": "workspace:^1.0.1",
+    "better-virtual-scroll": "workspace:*",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   }
