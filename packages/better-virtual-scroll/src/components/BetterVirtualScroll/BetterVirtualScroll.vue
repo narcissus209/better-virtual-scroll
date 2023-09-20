@@ -21,15 +21,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends { id: string | number; size?: number }">
 import { nextTick, onMounted, ref, type Ref, shallowRef, watch } from 'vue'
 
-type T = {
-  id: string | number
-  size?: number
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
-}
+// type T = {
+//   id: string | number
+//   size?: number
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   [key: string]: any
+// }
 
 type VirtualListItem = {
   height: number

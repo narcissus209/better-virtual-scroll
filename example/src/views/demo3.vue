@@ -25,12 +25,12 @@ import img3 from '@/assets/imgs/img3.jpg'
 import img4 from '@/assets/imgs/img4.jpg'
 import img5 from '@/assets/imgs/img5.jpg'
 
-const imgs: any = {
-  img1: img1,
-  img2: img2,
-  img3: img3,
-  img4: img4,
-  img5: img5,
+const imgs: Record<string, string> = {
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
 }
 
 const getRandomNum = (min: number, max: number) => {
