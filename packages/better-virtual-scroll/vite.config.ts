@@ -16,14 +16,18 @@ export default defineConfig({
       output: [
         {
           format: 'es',
-          entryFileNames: '[name].js',
+          entryFileNames: chunkInfo => {
+            return chunkInfo.name.toString().split('.')[0] + '.js'
+          },
           dir: './dist/es',
           preserveModules: true,
           preserveModulesRoot: './src',
         },
         {
           format: 'cjs',
-          entryFileNames: '[name].js',
+          entryFileNames: chunkInfo => {
+            return chunkInfo.name.toString().split('.')[0] + '.js'
+          },
           dir: './dist/lib',
           preserveModules: true,
           preserveModulesRoot: './src',
