@@ -1,6 +1,6 @@
 <template>
   <div ref="demo3Ref" class="demo3">
-    <BetterVirtualScroll class="scroll" :list="list" :buffer="600" :update-count="updateCount">
+    <BetterVirtualScroll class="scroll" :list="list" :buffer="600" :update-count="updateCount" @update="update">
       <template #before>
         <div>特殊布局, 一行可展示多条, 行高相同, 以每行展示 4 条为例子</div>
         <div>图片宽度按宽度比例放 4 个, 宽高成比例 1:1 的图片</div>
@@ -76,6 +76,10 @@ onMounted(() => {
   list.value = _list
   updateCount.value++
 })
+
+const update = (startIndex: number, endIndex: number) => {
+  console.log(startIndex, endIndex)
+}
 </script>
 
 <style lang="less" scoped>

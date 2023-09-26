@@ -193,6 +193,7 @@ watch(
 )
 
 onMounted(() => {
+  if (!props.list.length) return
   initData()
   calcRenderList()
 })

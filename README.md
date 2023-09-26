@@ -57,6 +57,10 @@ app.component('BetterVirtualScroll', BetterVirtualScroll)
   type UpdateCount = number
   ```
 
+## Emits
+
+- `update(startIndex: number, endIndex: number)`: 当前虚拟滚动列表的开始下标与结束下标
+
 ## Usage
 
 ### 1. 每条数据的行高相同
@@ -179,7 +183,7 @@ const setItemHeight = (index: number) => {
 ```vue
 <template>
   <div ref="demo3Ref" class="demo3">
-    <BetterVirtualScroll class="scroll" :list="list" :buffer="600" :update-count="updateCount">
+    <BetterVirtualScroll class="scroll" :list="list" :buffer="600" :update-count="updateCount" @update="update">
       <template #before>
         <div>特殊布局, 一行可展示多条, 行高相同, 以每行展示 4 条为例子</div>
         <div>图片宽度按宽度比例放 4 个, 宽高成比例 1:1 的图片</div>
@@ -205,12 +209,12 @@ import img3 from '@/assets/imgs/img3.jpg'
 import img4 from '@/assets/imgs/img4.jpg'
 import img5 from '@/assets/imgs/img5.jpg'
 
-const imgs: any = {
-  img1: img1,
-  img2: img2,
-  img3: img3,
-  img4: img4,
-  img5: img5,
+const imgs: Record<string, string> = {
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
 }
 
 const getRandomNum = (min: number, max: number) => {
@@ -257,6 +261,10 @@ onMounted(() => {
   list.value = _list
   updateCount.value++
 })
+
+const update = (startIndex: number, endIndex: number) => {
+  console.log(startIndex, endIndex)
+}
 </script>
 
 <style lang="less" scoped>
