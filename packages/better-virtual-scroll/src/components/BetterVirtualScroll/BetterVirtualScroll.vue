@@ -10,7 +10,7 @@
     </div>
     <div class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
       <div class="better-virtual-scroll-view-list" :style="{ transform: transform }">
-        <template v-for="item in renderList" :key="item.id">
+        <template v-for="item in renderList" :key="item.data.id">
           <slot :item="item.data" :index="item.index"></slot>
         </template>
       </div>
