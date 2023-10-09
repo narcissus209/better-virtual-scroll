@@ -10,8 +10,8 @@
     </div>
     <div class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
       <div class="better-virtual-scroll-view-list" :style="{ transform: transform }">
-        <template v-for="(item, index) in renderList" :key="item.id">
-          <slot :item="item" :index="index"></slot>
+        <template v-for="item in renderList" :key="item.id">
+          <slot :item="item.data" :index="item.index"></slot>
         </template>
       </div>
     </div>
@@ -31,10 +31,15 @@ import { nextTick, onMounted, ref, type Ref, shallowRef, watch } from 'vue'
 //   [key: string]: any
 // }
 
+type VirtualData = {
+  data: T
+  index: number
+}
+
 type VirtualListItem = {
   height: number
   top: number
-  children: T[]
+  children: VirtualData[]
 }
 
 const props = withDefaults(
@@ -73,11 +78,13 @@ const initData = () => {
       _list.push({
         top,
         height,
-        children: [props.list[index]],
+        children: [],
       })
-    } else {
-      _list[_list.length - 1].children.push(props.list[index])
     }
+    _list[_list.length - 1].children.push({
+      index: index,
+      data: props.list[index],
+    })
     top += height
   }
 
@@ -136,7 +143,7 @@ const getStartIndex = (scrollTop: number) => {
 
 const transform = ref('')
 let scrollRange = [0, 0]
-const renderList = shallowRef<T[]>([])
+const renderList = shallowRef<VirtualData[]>([])
 const calcRenderList = (isScroll?: boolean) => {
   const scrollTop = getScrollTop()
   if (isScroll && scrollRange[0] !== scrollRange[1]) {
@@ -159,7 +166,7 @@ const calcRenderList = (isScroll?: boolean) => {
 
   // 视图列表数据与移动
   const viewList = virtualList.slice(upStartIndex, downEndIndex)
-  const _renderList: T[] = []
+  const _renderList: VirtualData[] = []
   for (let i = 0; i < viewList.length; i++) {
     _renderList.push(...viewList[i].children)
   }
