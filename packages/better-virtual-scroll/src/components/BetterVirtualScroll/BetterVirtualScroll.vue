@@ -5,7 +5,7 @@
     style="height: 100%; width: 100%; overflow-y: auto"
     @scroll.passive="onScroll"
   >
-    <div v-if="$slots.before" class="better-virtual-scroll-before">
+    <div v-if="$slots.before" ref="beforeRef" class="better-virtual-scroll-before">
       <slot name="before"></slot>
     </div>
     <div class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
@@ -59,6 +59,8 @@ const emits = defineEmits<{
 // 减少后面的判断，此值必定存在
 const betterVirtualScrollRef = ref() as Ref<HTMLDivElement>
 const getScrollTop = () => betterVirtualScrollRef.value.scrollTop
+const beforeRef = ref() as Ref<HTMLDivElement>
+let beforeDivHeight = 0
 
 let virtualList: VirtualListItem[] = []
 let virtualListLen = 0
@@ -68,6 +70,7 @@ let maxHeight = -1 // 最大行高
 let bufferCount = 0 // 上下缓存数量
 let maxViewCount = 0 // 一屏的最大数量
 const initData = () => {
+  beforeDivHeight = beforeRef.value.clientHeight
   const _list: VirtualListItem[] = []
   let top = 0
   for (let index = 0; index < props.list.length; index++) {
@@ -145,9 +148,9 @@ const transform = ref('')
 let scrollRange = [0, 0]
 const renderList = shallowRef<VirtualData[]>([])
 const calcRenderList = (isScroll?: boolean) => {
-  const scrollTop = getScrollTop()
+  const scrollTop = Math.max(getScrollTop() - beforeDivHeight, 0)
   if (isScroll && scrollRange[0] !== scrollRange[1]) {
-    if (scrollTop > scrollRange[0] && scrollTop < scrollRange[1]) {
+    if (scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
       return
     }
   }
@@ -204,4 +207,32 @@ onMounted(() => {
   initData()
   calcRenderList()
 })
+
+const scrollTo = (y: number) => {
+  betterVirtualScrollRef.value.scrollTo({ top: y, behavior: 'smooth' })
+}
+
+const scrollToItemById = (id: T['id']) => {
+  for (let i = 0; i < virtualList.length; i++) {
+    for (let j = 0; j < virtualList[i].children.length; j++) {
+      if (id === virtualList[i].children[j].data.id) {
+        scrollTo(virtualList[i].top + beforeDivHeight)
+        break
+      }
+    }
+  }
+}
+
+const scrollToItemByIndex = (index: number) => {
+  let forIndex = -1
+  for (let i = 0; i < virtualList.length; i++) {
+    forIndex += virtualList[i].children.length
+    if (forIndex >= index) {
+      scrollTo(virtualList[i].top + beforeDivHeight)
+      break
+    }
+  }
+}
+
+defineExpose({ scrollTo, scrollToItemById, scrollToItemByIndex })
 </script>
