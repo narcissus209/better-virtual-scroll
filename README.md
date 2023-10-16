@@ -61,6 +61,16 @@ app.component('BetterVirtualScroll', BetterVirtualScroll)
 
 - `update(startIndex: number, endIndex: number)`: 当前虚拟滚动列表的开始下标与结束下标
 
+## Ref Value Event
+
+```ts
+type ScrollBehavior = "auto" | "instant" | "smooth";
+```
+
+- `scrollTo(top: number, behavior: ScrollBehavior = 'smooth')`: 滚动到指定高度
+- `scrollToItemById(id: string | number, behavior: ScrollBehavior = 'smooth')`: 滚动到指定 `id` 的元素
+- `scrollToItemByIndex(index: number, behavior: ScrollBehavior = 'smooth')`: 滚动到指定下标的元素
+
 ## Usage
 
 ### 1. 每条数据的行高相同
@@ -302,4 +312,35 @@ const update = (startIndex: number, endIndex: number) => {
   }
 }
 </style>
+```
+
+### 滚动到指定元素
+
+```vue
+<template>
+  <div>
+    <BetterVirtualScroll ref="scrollRef">
+      <!-- ... -->
+    </BetterVirtualScroll>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const scrollRef = ref()
+const scrollToTop = () => {
+  scrollRef.value.scrollTo(100)
+}
+
+const scrollToId = () => {
+  scrollRef.value.scrollToItemById('qwe85a1sf')
+}
+
+const scrollToIndex = () => {
+  scrollRef.value.scrollToItemByIndex(18)
+}
+</script>
+
+<style lang="less" scoped></style>
 ```

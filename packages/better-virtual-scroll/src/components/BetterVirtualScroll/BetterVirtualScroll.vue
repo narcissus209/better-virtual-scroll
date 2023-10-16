@@ -208,27 +208,27 @@ onMounted(() => {
   calcRenderList()
 })
 
-const scrollTo = (y: number) => {
-  betterVirtualScrollRef.value.scrollTo({ top: y, behavior: 'smooth' })
+const scrollTo = (top: number, behavior: ScrollBehavior = 'smooth') => {
+  betterVirtualScrollRef.value.scrollTo({ top, behavior })
 }
 
-const scrollToItemById = (id: T['id']) => {
+const scrollToItemById = (id: T['id'], behavior: ScrollBehavior = 'smooth') => {
   for (let i = 0; i < virtualList.length; i++) {
     for (let j = 0; j < virtualList[i].children.length; j++) {
       if (id === virtualList[i].children[j].data.id) {
-        scrollTo(virtualList[i].top + beforeDivHeight)
+        scrollTo(virtualList[i].top + beforeDivHeight, behavior)
         break
       }
     }
   }
 }
 
-const scrollToItemByIndex = (index: number) => {
+const scrollToItemByIndex = (index: number, behavior: ScrollBehavior = 'smooth') => {
   let forIndex = -1
   for (let i = 0; i < virtualList.length; i++) {
     forIndex += virtualList[i].children.length
     if (forIndex >= index) {
-      scrollTo(virtualList[i].top + beforeDivHeight)
+      scrollTo(virtualList[i].top + beforeDivHeight, behavior)
       break
     }
   }
