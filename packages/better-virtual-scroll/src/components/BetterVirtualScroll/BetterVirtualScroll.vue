@@ -70,7 +70,7 @@ let maxHeight = -1 // 最大行高
 let bufferCount = 0 // 上下缓存数量
 let maxViewCount = 0 // 一屏的最大数量
 const initData = () => {
-  beforeDivHeight = beforeRef.value.clientHeight
+  beforeDivHeight = beforeRef.value?.clientHeight || 0
   const _list: VirtualListItem[] = []
   let top = 0
   for (let index = 0; index < props.list.length; index++) {
