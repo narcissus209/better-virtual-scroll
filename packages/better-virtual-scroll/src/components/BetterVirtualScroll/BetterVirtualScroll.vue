@@ -48,8 +48,11 @@ const props = withDefaults(
     itemSize?: number
     buffer?: number // 预留显示的像素
     updateCount?: number
+    scrollTop?: number
   }>(),
-  {},
+  {
+    scrollTop: 0,
+  },
 )
 
 const emits = defineEmits<{
@@ -99,6 +102,10 @@ const initData = () => {
   // 计算一屏可展示的数量
   const viewHeight = betterVirtualScrollRef.value.getBoundingClientRect().height
   maxViewCount = Math.ceil(viewHeight / minHeight)
+
+  const canScrollHeight = top + beforeDivHeight - viewHeight
+  memberTop = Math.min(memberTop, canScrollHeight)
+
   // 计算上下缓冲去可展示的数量
   const bufferHeight = props.buffer && props.buffer > viewHeight ? props.buffer : viewHeight
   bufferCount = Math.ceil(bufferHeight / minHeight)
@@ -147,13 +154,9 @@ const getStartIndex = (scrollTop: number) => {
 const transform = ref('')
 let scrollRange = [0, 0]
 const renderList = shallowRef<VirtualData[]>([])
-const calcRenderList = (isScroll?: boolean) => {
-  const scrollTop = Math.max(getScrollTop() - beforeDivHeight, 0)
-  if (isScroll && scrollRange[0] !== scrollRange[1]) {
-    if (scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
-      return
-    }
-  }
+let memberTop = 0
+const calcRenderList = () => {
+  const scrollTop = Math.max(memberTop - beforeDivHeight, 0)
 
   // 可视区域的开始下标
   const midStartIndex = getStartIndex(scrollTop)
@@ -183,30 +186,18 @@ const calcRenderList = (isScroll?: boolean) => {
   emits('update', upStartIndex, downEndIndex)
 }
 
-const requestAnimationCalcViewList = (isScroll?: boolean) => {
+const onScroll = () => {
   requestAnimationFrame(() => {
-    calcRenderList(isScroll)
+    const scrollTop = getScrollTop()
+    if (scrollRange[0] !== scrollRange[1]) {
+      if (scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
+        return
+      }
+    }
+    memberTop = scrollTop
+    calcRenderList()
   })
 }
-
-const onScroll = () => {
-  requestAnimationCalcViewList(true)
-}
-
-watch(
-  () => props.updateCount,
-  async () => {
-    await nextTick()
-    initData()
-    calcRenderList()
-  },
-)
-
-onMounted(() => {
-  if (!props.list.length) return
-  initData()
-  calcRenderList()
-})
 
 const scrollTo = (top: number, behavior: ScrollBehavior = 'smooth') => {
   betterVirtualScrollRef.value.scrollTo({ top, behavior })
@@ -235,4 +226,32 @@ const scrollToItemByIndex = (index: number, behavior: ScrollBehavior = 'smooth')
 }
 
 defineExpose({ scrollTo, scrollToItemById, scrollToItemByIndex })
+
+watch(
+  () => props.scrollTop,
+  async () => {
+    if (props.scrollTop === undefined) return
+    memberTop = props.scrollTop
+    await nextTick()
+    scrollTo(memberTop, 'instant')
+  },
+  {
+    immediate: true,
+  },
+)
+
+watch(
+  () => props.updateCount,
+  async () => {
+    await nextTick()
+    initData()
+    calcRenderList()
+  },
+)
+
+onMounted(() => {
+  if (!props.list.length) return
+  initData()
+  calcRenderList()
+})
 </script>

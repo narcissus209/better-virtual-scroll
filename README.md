@@ -57,6 +57,12 @@ app.component('BetterVirtualScroll', BetterVirtualScroll)
   type UpdateCount = number
   ```
 
+- `scrollTop`: 通过传入 `scrollTop`，可以初始化当前滚动的高度
+
+  ```ts
+  type scrollTop = number
+  ```
+
 ## Emits
 
 - `update(startIndex: number, endIndex: number)`: 当前虚拟滚动列表的开始下标与结束下标
