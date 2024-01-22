@@ -1,12 +1,12 @@
 <template>
   <div class="home">
-    <div class="nav-bar">
+    <div class="container">
+      <RouterView></RouterView>
+    </div>
+    <div class="foot-nav-bar">
       <RouterLink class="item" to="/demo1">简单列表</RouterLink>
       <RouterLink class="item" to="/demo2">行高不同</RouterLink>
       <RouterLink class="item" to="/demo3">特殊布局</RouterLink>
-    </div>
-    <div class="container">
-      <RouterView></RouterView>
     </div>
   </div>
 </template>
@@ -24,7 +24,7 @@
     width: 100%;
     overflow: auto;
   }
-  .nav-bar {
+  .foot-nav-bar {
     height: @footerHeight;
     width: 100%;
     display: flex;

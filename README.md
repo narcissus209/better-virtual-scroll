@@ -320,7 +320,7 @@ const update = (startIndex: number, endIndex: number) => {
 </style>
 ```
 
-### 滚动到指定元素
+### 4. 滚动到指定元素
 
 ```vue
 <template>
@@ -349,4 +349,32 @@ const scrollToIndex = () => {
 </script>
 
 <style lang="less" scoped></style>
+```
+
+### 5. 支持吸顶
+
+在 `before` 插槽中，可以通过 `css3` 的 `position: sticky;` 实现吸顶效果
+
+```vue
+<template>
+  <div>
+    <BetterVirtualScroll ref="scrollRef" ...>
+      <template #before>
+        <div class="sticky-top">我可以吸顶</div>
+      </template>
+      <!-- ... -->
+    </BetterVirtualScroll>
+  </div>
+</template>
+
+<script setup lang="ts"></script>
+
+<style lang="less" scoped>
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+}
+</style>
 ```

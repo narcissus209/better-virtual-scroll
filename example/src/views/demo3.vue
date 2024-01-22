@@ -13,6 +13,7 @@
         <div>特殊布局, 一行可展示多条, 行高相同, 以每行展示 4 条为例子</div>
         <div>图片宽度按宽度比例放 4 个, 宽高成比例 1:1 的图片</div>
         <div>内容两边 padding 为 24, 图片上下左右间隔为 16</div>
+        <div class="sticky-top">我可以吸顶</div>
       </template>
       <template v-slot="{ item }">
         <div v-if="item.type === 'title'" class="title">{{ item.text }}</div>
@@ -25,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { BetterVirtualScroll } from 'better-virtual-scroll'
+import { BetterVirtualScroll } from 'better-virtual-scroll/src/components'
 import { onMounted, ref } from 'vue'
 import img1 from '@/assets/imgs/img1.jpg'
 import img2 from '@/assets/imgs/img2.jpg'
@@ -86,12 +87,14 @@ onMounted(() => {
 })
 
 const update = (startIndex: number, endIndex: number) => {
-  console.log(startIndex, endIndex)
+  // console.log(startIndex, endIndex)
 }
 
 const scrollRef = ref()
 const testClick = () => {
   scrollRef.value.scrollToItemByIndex(1)
+  // scrollRef.value.scrollToItemById(list.value[list.value.length - 1].id)
+  // scrollRef.value.scrollTo(0)
 }
 </script>
 
@@ -128,5 +131,17 @@ const testClick = () => {
     width: 100%;
     object-fit: cover;
   }
+}
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+}
+.fix {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 3;
 }
 </style>

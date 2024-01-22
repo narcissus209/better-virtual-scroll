@@ -2,22 +2,18 @@
   <div
     ref="betterVirtualScrollRef"
     class="better-virtual-scroll"
-    style="height: 100%; width: 100%; overflow-y: auto"
+    style="height: 100%; width: 100%; overflow-y: auto; position: relative"
     @scroll.passive="onScroll"
   >
-    <div v-if="$slots.before" ref="beforeRef" class="better-virtual-scroll-before">
-      <slot name="before"></slot>
-    </div>
-    <div class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
+    <slot name="before"></slot>
+    <div class="better-virtual-scroll-wrapper" ref="wrapperRef" :style="{ height: totalHeight + 'px' }">
       <div class="better-virtual-scroll-view-list" :style="{ transform: transform }">
         <template v-for="item in renderList" :key="item.data.id">
           <slot :item="item.data" :index="item.index"></slot>
         </template>
       </div>
     </div>
-    <div v-if="$slots.after" class="better-virtual-scroll-after">
-      <slot name="after"></slot>
-    </div>
+    <slot name="after"></slot>
   </div>
 </template>
 
@@ -62,7 +58,7 @@ const emits = defineEmits<{
 // 减少后面的判断，此值必定存在
 const betterVirtualScrollRef = ref() as Ref<HTMLDivElement>
 const getScrollTop = () => betterVirtualScrollRef.value.scrollTop
-const beforeRef = ref() as Ref<HTMLDivElement>
+const wrapperRef = ref() as Ref<HTMLDivElement>
 let beforeDivHeight = 0
 
 let virtualList: VirtualListItem[] = []
@@ -73,7 +69,7 @@ let maxHeight = -1 // 最大行高
 let bufferCount = 0 // 上下缓存数量
 let maxViewCount = 0 // 一屏的最大数量
 const initData = () => {
-  beforeDivHeight = beforeRef.value?.clientHeight || 0
+  beforeDivHeight = wrapperRef.value.getBoundingClientRect().top
   const _list: VirtualListItem[] = []
   let top = 0
   for (let index = 0; index < props.list.length; index++) {
