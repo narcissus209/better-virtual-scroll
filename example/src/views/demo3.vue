@@ -15,9 +15,9 @@
         <div>内容两边 padding 为 24, 图片上下左右间隔为 16</div>
         <div class="sticky-top">我可以吸顶</div>
       </template>
-      <template v-slot="{ item }">
-        <div v-if="item.type === 'title'" class="title">{{ item.text }}</div>
-        <div v-else class="item" :class="{ 'item-first': item.size }">
+      <template v-slot="{ item, index, active }">
+        <div v-if="item.type === 'title'" class="title" :data-index="index" :data-active="active">{{ item.text }}</div>
+        <div v-else class="item" :class="{ 'item-first': item.size }" :data-index="index" :data-active="active">
           <img :src="item.img" />
         </div>
       </template>
@@ -62,7 +62,7 @@ const contentPadding = 24 // 内容两边 padding
 const imgSpace = 16 // 图片间隔
 const width = Math.floor((clientWidth - contentPadding * 2 - imgSpace * (row - 1)) / row) // 图片宽度
 const itemSize = width + imgSpace // 图片包括 margin 的 itemSize, 用于虚拟滚动高度计算
-onMounted(() => {
+const getData = () => {
   const _list: Item[] = []
   for (let i = 0; i < 30; i++) {
     _list.push({
@@ -84,6 +84,9 @@ onMounted(() => {
   }
   list.value = _list
   updateCount.value++
+}
+onMounted(() => {
+  getData()
 })
 
 const update = (startIndex: number, endIndex: number) => {
@@ -92,9 +95,23 @@ const update = (startIndex: number, endIndex: number) => {
 
 const scrollRef = ref()
 const testClick = () => {
-  scrollRef.value.scrollToItemByIndex(1)
+  // 滚动
+  // scrollRef.value.scrollToItemByIndex(1)
   // scrollRef.value.scrollToItemById(list.value[list.value.length - 1].id)
   // scrollRef.value.scrollTo(0)
+
+  // 删除
+  // list.value = [
+  //   {
+  //     id: `title_1`,
+  //     text: `标题---1`,
+  //     size: 40, // 标题的高度为 40px
+  //     type: 'title',
+  //   },
+  // ]
+  // list.value = []
+  getData()
+  updateCount.value++
 }
 </script>
 

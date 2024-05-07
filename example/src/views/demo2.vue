@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { BetterVirtualScroll } from 'better-virtual-scroll'
+import { BetterVirtualScroll } from 'better-virtual-scroll/src/components'
 import { onMounted, ref } from 'vue'
 
 const getRandomNum = (min: number, max: number) => {
