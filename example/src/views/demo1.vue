@@ -4,8 +4,8 @@
       <template #before>
         <div>简单的列表模式，且每行高度相同</div>
       </template>
-      <template v-slot="{ item }">
-        <div class="item">{{ item.text }}</div>
+      <template v-slot="{ item, active }">
+        <div class="item" :data-active="active">{{ item.text }}</div>
       </template>
     </BetterVirtualScroll>
   </div>

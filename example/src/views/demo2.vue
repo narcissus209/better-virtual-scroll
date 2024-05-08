@@ -4,8 +4,8 @@
       <template #before>
         <div>每行的高度不同，点击每行可调整每行的高度</div>
       </template>
-      <template v-slot="{ item, index }">
-        <div class="item" :style="{ height: item.size + 'px' }" @click="setItemHeight(index)">
+      <template v-slot="{ item, index, active }">
+        <div class="item" :style="{ height: item.size + 'px' }" :data-active="active" @click="setItemHeight(index)">
           {{ item.text }} -- 行高：{{ item.size }}
         </div>
       </template>

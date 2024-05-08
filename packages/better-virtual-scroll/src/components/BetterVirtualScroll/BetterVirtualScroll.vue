@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends { id: string | number; size?: number }">
-import { nextTick, onMounted, ref, type Ref, shallowRef, watch } from 'vue'
+import { nextTick, onMounted, ref, shallowRef, type Ref, watch } from 'vue'
 
 type VirtualData = {
   data: T
@@ -47,6 +47,7 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (event: 'update', upStartIndex: number, midStartIndex: number, midEndIndex: number, downEndIndex: number): void
+  (event: 'hotUpdate', midStartIndex: number, midEndIndex: number): void
 }>()
 
 // 减少后面的判断，此值必定存在
@@ -91,6 +92,7 @@ const initData = () => {
 }
 
 let preMidStartIndex = 0
+// 获取可视区的开始下标
 const getMidStartIndex = (scrollTop: number) => {
   if (scrollTop <= virtualList[0].top) return 0
   const oldIndex = Math.min(preMidStartIndex, virtualListLen - 1)
@@ -105,12 +107,52 @@ const getMidStartIndex = (scrollTop: number) => {
     return virtualListLen - 1
   } else {
     for (let i = oldIndex; i > 0; i--) {
-      if (scrollTop >= virtualList[i].top && scrollTop < virtualList[i - 1].top) {
+      if (scrollTop >= virtualList[i].top && scrollTop < virtualList[i + 1].top) {
         return i
       }
     }
     return 0
   }
+}
+// 获取可视区的结束下标
+const getMidEndIndex = (scrollTop: number, midStartIndex: number) => {
+  const midEndPosition = scrollTop + viewHeight
+  // 可视区域的结束下标
+  let midEndIndex = 0
+  for (let i = midStartIndex + 1; i < virtualList.length - 2; i++) {
+    if (virtualList[i].top <= midEndPosition && midEndPosition <= virtualList[i + 1].top) {
+      midEndIndex = i
+      break
+    }
+  }
+  midEndIndex = midEndIndex ? midEndIndex : virtualList.length - 1
+  return midEndIndex
+}
+// 获取上缓冲区的起始下标
+const getUpStartIndex = (scrollTop: number, midStartIndex: number) => {
+  const upStartPosition = Math.max(scrollTop - bufferHeight, 0)
+  let upStartIndex = 0
+  for (let i = midStartIndex - 1; i > 0; i--) {
+    if (virtualList[i].top <= upStartPosition && upStartPosition <= virtualList[i + 1].top) {
+      upStartIndex = i
+      break
+    }
+  }
+  upStartIndex = upStartIndex ? upStartIndex : 0
+  return upStartIndex
+}
+// 获取下缓冲区的结束下标
+const getDownEndIndex = (scrollTop: number, midEndIndex: number) => {
+  const downEndPosition = scrollTop + viewHeight + bufferHeight
+  let downEndIndex = 0
+  for (let i = midEndIndex + 1; i < virtualList.length - 2; i++) {
+    if (virtualList[i].top <= downEndPosition && downEndPosition <= virtualList[i + 1].top) {
+      downEndIndex = i
+      break
+    }
+  }
+  downEndIndex = downEndIndex ? downEndIndex : virtualList.length - 1
+  return downEndIndex
 }
 
 const transform = ref('')
@@ -126,54 +168,23 @@ const calcRenderList = (scrollTop?: number) => {
     preMidStartIndex = 0
     return
   }
+  // 记录滚动位置
   memberTop = typeof scrollTop === 'number' ? scrollTop : memberTop
-  const threshold = {
-    top: Math.max(memberTop - bufferHeight, 0),
-    midStart: memberTop,
-    midEnd: memberTop + viewHeight,
-    bottom: memberTop + viewHeight + bufferHeight,
-  }
 
-  // 可视区域的开始下标
-  const midStartIndex = getMidStartIndex(threshold.midStart)
+  // 可视区的开始下标
+  const midStartIndex = getMidStartIndex(memberTop)
   preMidStartIndex = midStartIndex
-
-  // 可视区域的结束下标
-  let midEndIndex = 0
-  for (let i = midStartIndex + 1; i < virtualList.length - 2; i++) {
-    if (virtualList[i].top <= threshold.midEnd && threshold.midEnd <= virtualList[i + 1].top) {
-      midEndIndex = i
-      break
-    }
-  }
-  midEndIndex = midEndIndex ? midEndIndex : virtualList.length - 1
-
-  // 上阈值开始下标
-  let upStartIndex = 0
-  for (let i = midStartIndex - 1; i > 0; i--) {
-    if (virtualList[i].top <= threshold.top && threshold.top <= virtualList[i + 1].top) {
-      upStartIndex = i
-      break
-    }
-  }
-  upStartIndex = upStartIndex ? upStartIndex : 0
-
-  // 下阈值结束下标
-  let downEndIndex = 0
-  for (let i = upStartIndex + 1; i < virtualList.length - 2; i++) {
-    if (virtualList[i].top <= threshold.bottom && threshold.bottom <= virtualList[i + 1].top) {
-      downEndIndex = i
-      break
-    }
-  }
-  downEndIndex = downEndIndex ? downEndIndex : virtualList.length - 1
-
-  const activeIndex0 = Math.floor((upStartIndex + midStartIndex) / 2)
-  const activeIndex1 = Math.floor((midEndIndex + downEndIndex) / 2)
+  // 可视区的结束下标
+  const midEndIndex = getMidEndIndex(memberTop, midStartIndex)
+  // 上缓冲区的起始下标
+  const upStartIndex = getUpStartIndex(memberTop, midStartIndex)
+  // 下缓冲区的结束下标
+  const downEndIndex = getDownEndIndex(memberTop, midEndIndex)
+  console.log(upStartIndex, midStartIndex, midEndIndex, downEndIndex)
   // 视图列表数据与移动
   const _renderList: VirtualData[] = []
   for (let i = upStartIndex; i <= downEndIndex; i++) {
-    const active = i >= activeIndex0 && i <= activeIndex1
+    const active = i >= midStartIndex && i <= midEndIndex
     _renderList.push(...virtualList[i].children.map(item => ({ ...item, active })))
   }
   renderList.value = _renderList
@@ -189,15 +200,42 @@ const calcRenderList = (scrollTop?: number) => {
   emits('update', upStartIndex, midStartIndex, midEndIndex, downEndIndex)
 }
 
-const onScroll = () => {
-  requestAnimationFrame(() => {
-    const scrollTop = getScrollTop()
-    if (scrollRange[0] !== scrollRange[1]) {
-      if (scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
-        return
-      }
+const calcRenderActive = (scrollTop: number) => {
+  const midStartIndex = getMidStartIndex(scrollTop)
+  const midEndIndex = getMidEndIndex(scrollTop, midStartIndex)
+  const renderStartIndex = virtualList[midStartIndex].children[0].index
+  const renderEndIndex = virtualList[midEndIndex].children[virtualList[midEndIndex].children.length - 1].index
+
+  const _renderList: VirtualData[] = []
+  let isSame = true
+  for (let i = 0; i < renderList.value.length; i++) {
+    const item = renderList.value[i]
+    const active = item.index >= renderStartIndex && item.index <= renderEndIndex
+    if (active !== item.active) {
+      item.active = active
+      isSame = false
     }
-    calcRenderList(scrollTop)
+    _renderList[i] = item
+  }
+  if (!isSame) {
+    renderList.value = _renderList
+    emits('hotUpdate', midStartIndex, midEndIndex)
+  }
+}
+
+let isCalcScroll = false
+const onScroll = () => {
+  if (isCalcScroll) return
+  isCalcScroll = true
+  requestAnimationFrame(() => {
+    isCalcScroll = false
+    const scrollTop = getScrollTop()
+    // 在指定范围内，只需要计算 renderList 的 active
+    if (scrollRange[0] !== scrollRange[1] && scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
+      calcRenderActive(scrollTop)
+    } else {
+      calcRenderList(scrollTop)
+    }
   })
 }
 
