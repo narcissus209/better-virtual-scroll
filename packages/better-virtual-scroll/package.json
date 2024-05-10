@@ -1,6 +1,6 @@
 {
   "name": "better-virtual-scroll",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "vue3 虚拟滚动组件",
   "main": "dist/lib/index.js",
   "module": "dist/es/index.js",
