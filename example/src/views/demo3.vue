@@ -58,8 +58,8 @@ const list = ref<Item[]>([])
 const updateCount = ref(0)
 const clientWidth = document.body.clientWidth
 const row = 4 // 一行 4 个
-const contentPadding = 24 // 内容两边 padding
-const imgSpace = 16 // 图片间隔
+const contentPadding = 16 // 内容两边 padding
+const imgSpace = 4 // 图片间隔
 const width = Math.floor((clientWidth - contentPadding * 2 - imgSpace * (row - 1)) / row) // 图片宽度
 const itemSize = width + imgSpace // 图片包括 margin 的 itemSize, 用于虚拟滚动高度计算
 const getData = () => {
@@ -131,7 +131,6 @@ const testClick = () => {
   height: 40px;
 }
 .item {
-  display: inline-block;
   position: relative;
   width: calc(v-bind(width) * 1px);
   height: calc(v-bind(width) * 1px);

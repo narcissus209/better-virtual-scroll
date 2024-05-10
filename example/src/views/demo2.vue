@@ -51,5 +51,8 @@ const setItemHeight = (index: number) => {
 <style lang="less" scoped>
 .demo1 {
   height: 100%;
+  .item {
+    width: 100%;
+  }
 }
 </style>

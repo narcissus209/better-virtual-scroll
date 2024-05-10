@@ -6,8 +6,12 @@
     @scroll.passive="onScroll"
   >
     <slot name="before"></slot>
-    <div class="better-virtual-scroll-wrapper" ref="wrapperRef" :style="{ height: totalHeight + 'px' }">
-      <div class="better-virtual-scroll-view-list" :style="{ transform: transform }">
+    <div ref="wrapperRef" class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
+      <div
+        class="better-virtual-scroll-view-list"
+        style="will-change: transform; display: flex; flex-wrap: wrap"
+        :style="{ transform: transform }"
+      >
         <template v-for="item in renderList" :key="item.data.id">
           <slot :item="item.data" :index="item.index" :active="item.active"></slot>
         </template>
@@ -58,8 +62,9 @@ let beforeDivHeight = 0
 let viewHeight = 0 // 可视区域的高度
 let bufferHeight = 0 // 缓存区域的高度
 const initStaticData = () => {
-  viewHeight = betterVirtualScrollRef.value.getBoundingClientRect().height
-  beforeDivHeight = wrapperRef.value.getBoundingClientRect().top
+  const scrollRect = betterVirtualScrollRef.value.getBoundingClientRect()
+  viewHeight = scrollRect.height
+  beforeDivHeight = wrapperRef.value.getBoundingClientRect().top - scrollRect.top
   bufferHeight = props.buffer ? props.buffer : viewHeight
 }
 

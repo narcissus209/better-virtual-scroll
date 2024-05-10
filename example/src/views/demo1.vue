@@ -42,5 +42,6 @@ for (let i = 0; i < 30; i++) {
 }
 .item {
   height: 32px;
+  width: 100%;
 }
 </style>

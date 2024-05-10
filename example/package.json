@@ -4,7 +4,8 @@
   "description": "vue3 虚拟滚动组件示例",
   "author": "Wang JiaLong",
   "scripts": {
-    "dev": "vite --host"
+    "dev": "vite --host",
+    "build": "vite build"
   },
   "license": "MIT",
   "devDependencies": {
