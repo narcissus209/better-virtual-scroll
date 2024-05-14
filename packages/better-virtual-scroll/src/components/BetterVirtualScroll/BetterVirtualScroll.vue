@@ -1,33 +1,28 @@
 <template>
-  <div
-    ref="betterVirtualScrollRef"
-    class="better-virtual-scroll"
-    style="height: 100%; width: 100%; overflow-y: auto; position: relative"
-    @scroll.passive="onScroll"
-  >
+  <div ref="betterVirtualScrollRef" class="better-virtual-scroll" @scroll.passive="onScroll">
     <slot name="before"></slot>
     <div ref="wrapperRef" class="better-virtual-scroll-wrapper" :style="{ height: totalHeight + 'px' }">
       <div
-        class="better-virtual-scroll-view-list"
-        style="will-change: transform; display: flex; flex-wrap: wrap"
-        :style="{ transform: transform }"
+        v-for="item in renderList"
+        :key="item.data.id"
+        class="better-virtual-scroll-item"
+        :style="{ transform: item.transform }"
       >
-        <template v-for="item in renderList" :key="item.data.id">
-          <slot :item="item.data" :index="item.index" :active="item.active"></slot>
-        </template>
+        <slot :item="item.data" :index="item.index" :active="item.active"></slot>
       </div>
     </div>
     <slot name="after"></slot>
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends { id: string | number; size?: number }">
+<script setup lang="ts" generic="T extends { id: string | number; left?: number | string; height?: number }">
 import { nextTick, onMounted, ref, shallowRef, type Ref, watch } from 'vue'
 
 type VirtualData = {
   data: T
   index: number
-  active?: boolean
+  active: boolean
+  transform: string
 }
 
 type VirtualListItem = {
@@ -58,25 +53,22 @@ const emits = defineEmits<{
 const betterVirtualScrollRef = ref() as Ref<HTMLDivElement>
 const getScrollTop = () => betterVirtualScrollRef.value.scrollTop
 const wrapperRef = ref() as Ref<HTMLDivElement>
-let beforeDivHeight = 0
 let viewHeight = 0 // 可视区域的高度
 let bufferHeight = 0 // 缓存区域的高度
 const initStaticData = () => {
-  const scrollRect = betterVirtualScrollRef.value.getBoundingClientRect()
-  viewHeight = scrollRect.height
-  beforeDivHeight = wrapperRef.value.getBoundingClientRect().top - scrollRect.top
+  viewHeight = betterVirtualScrollRef.value.getBoundingClientRect().height
   bufferHeight = props.buffer ? props.buffer : viewHeight
 }
 
 let virtualList: VirtualListItem[] = []
 let virtualListLen = 0
-let canScrollHeight = 0
 const totalHeight = ref(0) // 数据列表总高度
 const initData = () => {
   const _list: VirtualListItem[] = []
-  let top = beforeDivHeight
+  let top = 0
   for (let index = 0; index < props.list.length; index++) {
-    const height = props.list[index].size || props.itemSize || 0
+    const height = props.list[index].height || props.itemSize || 0
+    const translateX = props.list[index].left || 0
     if (height) {
       _list.push({
         top,
@@ -87,13 +79,14 @@ const initData = () => {
     _list[_list.length - 1].children.push({
       index: index,
       data: props.list[index],
+      active: false,
+      transform: `translate(${translateX}px, ${_list[_list.length - 1].top}px)`,
     })
     top += height
   }
-  totalHeight.value = top - beforeDivHeight
+  totalHeight.value = top
   virtualList = _list
   virtualListLen = _list.length
-  canScrollHeight = Math.max(0, top - viewHeight)
 }
 
 let preMidStartIndex = 0
@@ -185,7 +178,6 @@ const calcRenderList = (scrollTop?: number) => {
   const upStartIndex = getUpStartIndex(memberTop, midStartIndex)
   // 下缓冲区的结束下标
   const downEndIndex = getDownEndIndex(memberTop, midEndIndex)
-  console.log(upStartIndex, midStartIndex, midEndIndex, downEndIndex)
   // 视图列表数据与移动
   const _renderList: VirtualData[] = []
   for (let i = upStartIndex; i <= downEndIndex; i++) {
@@ -193,7 +185,6 @@ const calcRenderList = (scrollTop?: number) => {
     _renderList.push(...virtualList[i].children.map(item => ({ ...item, active })))
   }
   renderList.value = _renderList
-  transform.value = `translate3d(0, ${virtualList[upStartIndex].top - beforeDivHeight}px, 0)`
 
   // 设置滚动时无需重新计算的范围
   const rangeIndex0 = Math.floor((upStartIndex + midStartIndex) / 2)
@@ -249,7 +240,7 @@ watch(
   async () => {
     if (props.scrollTop === undefined) return
     await nextTick()
-    memberTop = Math.min(props.scrollTop, canScrollHeight)
+    memberTop = props.scrollTop
     scrollTo({ top: memberTop, behavior: 'instant' })
   },
   {
@@ -309,3 +300,19 @@ const scrollToItemByIndex = (index: number, opt?: Omit<ScrollOpt, 'top'>) => {
 
 defineExpose({ scrollTo, scrollToItemById, scrollToItemByIndex })
 </script>
+<style scoped>
+.better-virtual-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  position: relative;
+}
+.better-virtual-scroll-wrapper {
+  position: relative;
+}
+.better-virtual-scroll-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>

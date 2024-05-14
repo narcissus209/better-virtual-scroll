@@ -27,13 +27,6 @@ for (let i = 0; i < 30; i++) {
     text: `item-${i}`,
   })
 }
-
-// const scrollTop = ref(0)
-// const updateCount = ref(1)
-// setTimeout(() => {
-//   updateCount.value++
-//   scrollTop.value = 8000
-// }, 2000)
 </script>
 
 <style lang="less" scoped>
@@ -42,6 +35,6 @@ for (let i = 0; i < 30; i++) {
 }
 .item {
   height: 32px;
-  width: 100%;
+  width: 100vw;
 }
 </style>
