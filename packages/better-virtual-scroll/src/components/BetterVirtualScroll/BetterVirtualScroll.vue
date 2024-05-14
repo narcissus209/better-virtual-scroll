@@ -36,7 +36,6 @@ const props = withDefaults(
     list: T[]
     itemSize?: number
     buffer?: number // 预留显示的像素
-    updateCount?: number
     scrollTop?: number
   }>(),
   {
@@ -51,12 +50,17 @@ const emits = defineEmits<{
 
 // 减少后面的判断，此值必定存在
 const betterVirtualScrollRef = ref() as Ref<HTMLDivElement>
-const getScrollTop = () => betterVirtualScrollRef.value.scrollTop
+const getScrollTop = () => {
+  if (!betterVirtualScrollRef.value?.scrollTop) return 0
+  return Math.max(betterVirtualScrollRef.value.scrollTop - beforeDivHeight, 0)
+}
 const wrapperRef = ref() as Ref<HTMLDivElement>
 let viewHeight = 0 // 可视区域的高度
+let beforeDivHeight = 0
 let bufferHeight = 0 // 缓存区域的高度
 const initStaticData = () => {
   viewHeight = betterVirtualScrollRef.value.getBoundingClientRect().height
+  beforeDivHeight = wrapperRef.value.offsetTop - betterVirtualScrollRef.value.offsetTop
   bufferHeight = props.buffer ? props.buffer : viewHeight
 }
 
@@ -156,28 +160,25 @@ const getDownEndIndex = (scrollTop: number, midEndIndex: number) => {
 const transform = ref('')
 let scrollRange = [0, 0]
 const renderList = shallowRef<VirtualData[]>([])
-let memberTop = 0
-const calcRenderList = (scrollTop?: number) => {
+const calcRenderList = () => {
   if (virtualListLen === 0) {
     transform.value = ''
     scrollRange = [0, 0]
     renderList.value = []
-    memberTop = 0
     preMidStartIndex = 0
     return
   }
-  // 记录滚动位置
-  memberTop = typeof scrollTop === 'number' ? scrollTop : memberTop
+  const scrollTop = getScrollTop()
 
   // 可视区的开始下标
-  const midStartIndex = getMidStartIndex(memberTop)
+  const midStartIndex = getMidStartIndex(scrollTop)
   preMidStartIndex = midStartIndex
   // 可视区的结束下标
-  const midEndIndex = getMidEndIndex(memberTop, midStartIndex)
+  const midEndIndex = getMidEndIndex(scrollTop, midStartIndex)
   // 上缓冲区的起始下标
-  const upStartIndex = getUpStartIndex(memberTop, midStartIndex)
+  const upStartIndex = getUpStartIndex(scrollTop, midStartIndex)
   // 下缓冲区的结束下标
-  const downEndIndex = getDownEndIndex(memberTop, midEndIndex)
+  const downEndIndex = getDownEndIndex(scrollTop, midEndIndex)
   // 视图列表数据与移动
   const _renderList: VirtualData[] = []
   for (let i = upStartIndex; i <= downEndIndex; i++) {
@@ -196,7 +197,8 @@ const calcRenderList = (scrollTop?: number) => {
   emits('update', upStartIndex, midStartIndex, midEndIndex, downEndIndex)
 }
 
-const calcRenderActive = (scrollTop: number) => {
+const calcRenderActive = () => {
+  const scrollTop = getScrollTop()
   const midStartIndex = getMidStartIndex(scrollTop)
   const midEndIndex = getMidEndIndex(scrollTop, midStartIndex)
   const renderStartIndex = virtualList[midStartIndex].children[0].index
@@ -228,9 +230,9 @@ const onScroll = () => {
     const scrollTop = getScrollTop()
     // 在指定范围内，只需要计算 renderList 的 active
     if (scrollRange[0] !== scrollRange[1] && scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
-      calcRenderActive(scrollTop)
+      calcRenderActive()
     } else {
-      calcRenderList(scrollTop)
+      calcRenderList()
     }
   })
 }
@@ -240,8 +242,7 @@ watch(
   async () => {
     if (props.scrollTop === undefined) return
     await nextTick()
-    memberTop = props.scrollTop
-    scrollTo({ top: memberTop, behavior: 'instant' })
+    scrollTo({ top: Math.max(props.scrollTop, 0), behavior: 'instant' })
   },
   {
     immediate: true,
@@ -249,7 +250,7 @@ watch(
 )
 
 watch(
-  () => props.updateCount,
+  () => props.list,
   async () => {
     await nextTick()
     initStaticData()
