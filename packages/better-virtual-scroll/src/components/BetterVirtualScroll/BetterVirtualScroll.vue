@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends { id: string | number; left?: number | string; height?: number }">
+<script setup lang="ts" generic="T extends { id: string | number; left?: number; height?: number }">
 import { nextTick, onMounted, ref, shallowRef, type Ref, watch } from 'vue'
 
 type VirtualData = {
@@ -34,7 +34,7 @@ type VirtualListItem = {
 const props = withDefaults(
   defineProps<{
     list: T[]
-    itemSize?: number
+    itemHeight?: number
     buffer?: number // 预留显示的像素
     scrollTop?: number
   }>(),
@@ -44,6 +44,8 @@ const props = withDefaults(
 )
 
 const emits = defineEmits<{
+  (event: 'scrollStart', e: Event): void
+  (event: 'scrollEnd', e: Event): void
   (event: 'update', upStartIndex: number, midStartIndex: number, midEndIndex: number, downEndIndex: number): void
   (event: 'hotUpdate', midStartIndex: number, midEndIndex: number): void
 }>()
@@ -71,7 +73,7 @@ const initData = () => {
   const _list: VirtualListItem[] = []
   let top = 0
   for (let index = 0; index < props.list.length; index++) {
-    const height = props.list[index].height || props.itemSize || 0
+    const height = props.list[index].height || props.itemHeight || 0
     const translateX = props.list[index].left || 0
     if (height) {
       _list.push({
@@ -188,10 +190,10 @@ const calcRenderList = () => {
   renderList.value = _renderList
 
   // 设置滚动时无需重新计算的范围
-  const rangeIndex0 = Math.floor((upStartIndex + midStartIndex) / 2)
-  const rangeIndex1 = Math.max(Math.min(Math.floor((midStartIndex + midEndIndex) / 2), virtualListLen - 1), 0)
+  const rangeIndex0 = ~~((upStartIndex + midStartIndex) / 2)
+  const rangeIndex1 = Math.max(Math.min(~~((midStartIndex + midEndIndex) / 2), virtualListLen - 1), 0)
   const scrollRange0 = rangeIndex0 ? virtualList[rangeIndex0].top : 0
-  const scrollRange1 = virtualList[rangeIndex1].top
+  const scrollRange1 = virtualList[rangeIndex1].top || 0
   scrollRange = [scrollRange0, scrollRange1]
 
   emits('update', upStartIndex, midStartIndex, midEndIndex, downEndIndex)
@@ -221,13 +223,26 @@ const calcRenderActive = () => {
   }
 }
 
+const EmitScrollEndTime = 400
+let scrollTimer = 0
 let isCalcScroll = false
-const onScroll = () => {
+const onScroll = (e: Event) => {
+  if (!scrollTimer) {
+    emits('scrollStart', e)
+  } else {
+    window.clearTimeout(scrollTimer)
+    scrollTimer = 0
+  }
+  scrollTimer = window.setTimeout(() => {
+    emits('scrollEnd', e)
+  }, EmitScrollEndTime)
+
   if (isCalcScroll) return
   isCalcScroll = true
   requestAnimationFrame(() => {
     isCalcScroll = false
     const scrollTop = getScrollTop()
+    if (!viewHeight) initStaticData()
     // 在指定范围内，只需要计算 renderList 的 active
     if (scrollRange[0] !== scrollRange[1] && scrollTop >= scrollRange[0] && scrollTop <= scrollRange[1]) {
       calcRenderActive()
@@ -237,17 +252,22 @@ const onScroll = () => {
   })
 }
 
-watch(
-  () => props.scrollTop,
-  async () => {
-    if (props.scrollTop === undefined) return
+let isInListen = false
+const listenScrollTop = async () => {
+  await nextTick()
+  if (isInListen || props.scrollTop === undefined || !wrapperRef.value) return
+  isInListen = true
+  // 处理数据更新了 dom 还没刷新问题
+  while (renderList.value.length !== wrapperRef.value.children.length) {
     await nextTick()
-    scrollTo({ top: Math.max(props.scrollTop, 0), behavior: 'instant' })
-  },
-  {
-    immediate: true,
-  },
-)
+  }
+  scrollTo({ top: Math.max(props.scrollTop, 0), behavior: 'instant' })
+  isInListen = false
+}
+
+watch(() => props.scrollTop, listenScrollTop, {
+  immediate: true,
+})
 
 watch(
   () => props.list,
@@ -301,7 +321,7 @@ const scrollToItemByIndex = (index: number, opt?: Omit<ScrollOpt, 'top'>) => {
 
 defineExpose({ scrollTo, scrollToItemById, scrollToItemByIndex })
 </script>
-<style scoped>
+<style>
 .better-virtual-scroll {
   height: 100%;
   width: 100%;

@@ -20,10 +20,11 @@
       </template>
       <template v-slot="{ item, index, active }">
         <div v-if="item.type === 'title'" class="title" :data-index="index" :data-active="active">{{ item.data }}</div>
-        <div v-else class="item" :class="{ 'item-first': item.height }" :data-index="index" :data-active="active">
+        <Item3 v-else :item="item" :width="width"></Item3>
+        <!-- <div v-else class="item" :class="{ 'item-first': item.height }" :data-index="index" :data-active="active">
           <img :src="item.data" />
           <button class="del-btn" @click="del(item.id)">删除</button>
-        </div>
+        </div> -->
       </template>
     </BetterVirtualScroll>
   </div>
@@ -31,6 +32,7 @@
 
 <script setup lang="ts">
 import { BetterVirtualScroll } from 'better-virtual-scroll/src/components'
+import Item3 from './Item3.vue'
 import { onMounted, ref } from 'vue'
 import img1 from '@/assets/imgs/img1.jpg'
 import img2 from '@/assets/imgs/img2.jpg'
