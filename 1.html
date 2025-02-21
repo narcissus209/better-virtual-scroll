@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const MaxWidth = '100%'
+    const data = []
+    for (let i = 0; i < 100; i++) {
+      if (i % 13 === 0) {
+        data.push({
+          id: 'title-' + i,
+          type: 'title',
+          text: 'title-' + i,
+          height: 48,
+          width: '100%'
+        })
+      }
+      data.push({
+        id: 'img-' + i,
+        type: 'img',
+        text: '图片' + i,
+        height: 112,
+        width: 112,
+      })
+    }
+
+    const getArrMin = (arr) => {
+      return arr.reduce(
+        (pre, val, index) => {
+          if (val < pre.val) {
+            return { val, index }
+          }
+          return pre
+        },
+        { val: Number.MAX_SAFE_INTEGER, index: 0 },
+      )
+    }
+    const getArrMax = (arr) => {
+      return arr.reduce(
+        (pre, val, index) => {
+          if (val > pre.val) {
+            return { val, index }
+          }
+          return pre
+        },
+        { val: Number.MIN_SAFE_INTEGER, index: 0 },
+      )
+    }
+    const calcData = (list) => {
+      const _list = []
+      let tops = [0, 0, 0, 0, 0]
+
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i]
+        const { width, height } = (() => {
+          if (item.height && item.width) {
+            return { height: item.height, width: item.width }
+          } else {
+            return { height: props.itemHeight || 0, width: '100%' }
+          }
+        })()
+        const tempItem = {
+          data: item,
+          top: 0,
+          left: 0,
+          height: height,
+          width: width,
+          active: false,
+        }
+        if (width === MaxWidth) {
+          tempItem.top = getArrMax(tops).val
+          tempItem.left = 0
+          const newTop = tempItem.top + tempItem.height
+          tops = tops.fill(newTop)
+        } else {
+          const { val, index } = getArrMin(tops)
+          tempItem.top = val
+          tempItem.left = index * tempItem.width
+          const newTop = tempItem.top + tempItem.height
+          tops[index] = newTop
+        }
+        _list.push(tempItem)
+      }
+      const contentHeight = getArrMax(tops).val
+      return { list: _list, height: contentHeight }
+    }
+
+    calcData(data)
+  </script>
+</body>
+</html>
